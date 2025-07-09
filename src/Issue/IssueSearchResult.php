@@ -17,7 +17,7 @@ class IssueSearchResult
     /**
      * @var string
      */
-    public $expand;
+    public ?string $expand = null;
 
     /**
      * @var int
@@ -114,7 +114,7 @@ class IssueSearchResult
     }
 
     /**
-     * @return string
+     * @return ?string
      */
     public function getExpand()
     {
@@ -122,9 +122,9 @@ class IssueSearchResult
     }
 
     /**
-     * @param string $expand
+     * @param ?string $expand
      */
-    public function setExpand($expand)
+    public function setExpand(?string $expand)
     {
         $this->expand = $expand;
     }
