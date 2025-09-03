@@ -523,36 +523,36 @@ class IssueService extends \JiraRestApi\JiraClient
      * Search issues.
      *
      * @param string $jql
-     * @param int    $startAt
+     * @param $pageToken
      * @param int    $maxResults
      * @param array  $fields
      * @param array  $expand
-     * @param bool   $validateQuery
+     * @param $nextPageToken
      *
      * @throws \JsonMapper_Exception
      * @throws JiraException
      *
      * @return IssueSearchResult
      */
-    public function search(string $jql, int $startAt = 0, int $maxResults = 15, array $fields = [], array $expand = [], bool $validateQuery = true): IssueSearchResult
+    public function search(string $jql, $pageToken = null, int $maxResults = 15, array $fields = [], array $expand = [], &$nextPageToken = null): IssueSearchResult
     {
         $data = json_encode([
             'jql'           => $jql,
-            'startAt'       => $startAt,
+            'nextPageToken'       => $pageToken,
             'maxResults'    => $maxResults,
             'fields'        => $fields,
-            'expand'        => $expand,
-            'validateQuery' => $validateQuery,
+            'expand'        => implode(',',$expand),
         ]);
 
-        $ret = $this->exec('search', $data, 'POST');
+        $ret = $this->exec('/search/jql', $data, 'POST');
         $json = json_decode($ret);
 
-        $result = null;
+        if(isset($json->nextPageToken)) {
+            $nextPageToken = $json->nextPageToken;
+        }
 
         $result = $this->json_mapper->map(
-            $json,
-            new IssueSearchResult()
+            $json, new IssueSearchResult()
         );
 
         return $result;
